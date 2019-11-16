@@ -57,7 +57,7 @@
                                                         <span class="label sr-only">反对，不会显示你的姓名</span></button>
                                                 </div>
                                                 <div class="zm-item-answer-author-info">
-                                                    <a class="author-link" th:utext="${vo.map['user'].name}" data-tip="p$b$amuro1230" target="_blank" href="https://nowcoder.com/people/amuro1230"></a>
+                                                    <a class="author-link" th:utext="${vo.map['user'].name}" data-tip="p$b$amuro1230" target="_blank" th:href="@{'/user/'+${vo.map['user'].id}}"></a>
                                                     <span th:text="'，'+${vo.map['user'].salt}" class="bio">，从互联网行业出来在做旅行的前对冲基金从…</span>
 
                                                 </div>

@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="index-header" th:text="${msg}"></div>
-                    <input type="hidden" name="next" value="$!{next}"/>
+                    <input type="hidden" name="next" th:value="${next}"/>
                     <div class="button-wrapper command clearfix">
                        <!-- <button class="sign-button submit" type="submit">登录</button>-->
                         <button class="sign-button submit" type="submit" onclick="form=document.getElementById('regloginform');form.action='/login'">登录</button>

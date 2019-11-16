@@ -1,5 +1,6 @@
 package com.huster.bbs.configuration;
 
+import com.huster.bbs.interceptor.LoginRequiredInterceptor;
 import com.huster.bbs.interceptor.PassportInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +13,14 @@ public class BBSWebConfiguration implements WebMvcConfigurer {
     @Autowired
     PassportInterceptor passportInterceptor;
 
+    @Autowired
+    LoginRequiredInterceptor loginRequiredInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        //拦截器的顺序必须是这样的，先拦截验证，登录的话就将
         registry.addInterceptor(passportInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(loginRequiredInterceptor).addPathPatterns("/user/*");
 
     }
 }

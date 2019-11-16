@@ -1,81 +1,61 @@
 package com.huster.bbs.controller;
 
+import com.huster.bbs.model.HostHodler;
+import com.huster.bbs.model.ViewObject;
+import com.huster.bbs.model.Question;
+import com.huster.bbs.model.User;
+import com.huster.bbs.service.QuestionService;
+import com.huster.bbs.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.List;
 
-//@Controller
+/**
+ * 新的首页
+ */
+@Controller
 public class IndexController {
 
-    @RequestMapping("/index/{id}")
-    @ResponseBody
-    public String index(@PathVariable int id,@RequestParam(defaultValue = "y") String type ,@RequestParam(value = "name",required = false) String name) {
-        //return String.format("This is nowCode %d and %s",id,name);
-        return id +" "+name+" "+type;
-    }
+    @Autowired
+    QuestionService questionService;
+    @Autowired
+    UserService userService;
 
-    @RequestMapping(path = {"/vm"},method = {RequestMethod.GET})
-    public String template(Model model) {
-        model.addAttribute("name","king");
+    @Autowired
+    HostHodler hostHodler;
 
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("hello");
-        list.add("world");
-        list.add("!!");
-        model.addAttribute("array",list);
-
-        return "home";
-    }
-
-    //测试controller里的参数的使用：
-    @RequestMapping("/request")
-    @ResponseBody
-    public String request(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(request.getMethod() + "<br/>");
-        sb.append(request.getRequestURI() + "<br/>");
-        sb.append(request.getRequestedSessionId() + "<br/>");
-        sb.append(request.getQueryString() + "<br/>");
-        sb.append(request.getPathInfo() + "<br/>");
-
-        Enumeration<String> names = request.getHeaderNames();
-        while (names.hasMoreElements()) {
-            String name = names.nextElement();
-            String header = request.getHeader(name);
-            sb.append(name + ":" + header + "<br/>");
-        }
-
-        response.addHeader("name", "king");
-        response.addCookie(new Cookie("username", "kingcookie"));
-
-        return sb.toString();
-    }
-
+    //日志打印
     private final static Logger logger = LoggerFactory.getLogger(IndexController.class);
-    @RequestMapping("/admin/{id}")
-    @ResponseBody
-    public String isAdmin(@PathVariable int id) {
-        logger.info("execute Method");
-        if (id == 0) {
-            return "Hello admin";
+    //私有方法，用于根据条件查询问题，并将问题包装成ViewObject
+    private List<ViewObject> getQuestions(int userId, int offset, int limit) {
+        List<ViewObject> vos = new ArrayList<ViewObject>();
+
+        List<Question> questions = questionService.getLatestQuestion(userId,offset,limit);
+        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
+            ViewObject obj = new ViewObject();
+            obj.set("question", question);
+            User user = userService.getUser(question.getUserId());
+            obj.set("user", user);
+            vos.add(obj);
         }
-        throw new IllegalArgumentException("非管理员登录");
+        return vos;
     }
 
-
-    @ExceptionHandler
-    @ResponseBody
-    public String exceptError(Exception e) {
-        return "error:" + e.getMessage();
+    @RequestMapping(path = {"/index","/"}, method ={RequestMethod.GET,RequestMethod.POST})
+    public String index(Model model) {
+        model.addAttribute("vos", getQuestions(0,0,10));
+        return "index";
     }
-
+    @RequestMapping(path = {"/user/{id}"}, method = {RequestMethod.GET,RequestMethod.POST})
+    public String index(Model model, @PathVariable("id") int id) {
+        model.addAttribute("vos", getQuestions(id,0,10));
+        return "index";
+    }
 
 }

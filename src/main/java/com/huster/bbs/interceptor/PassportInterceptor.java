@@ -16,7 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
-//验证用户身份的拦截器/验证用户是否登录，在controller访问的前中后进行拦截
+/**
+ * 功能：在用户每个访问请求最开始，验证用户身份
+ * 验证用户身份的拦截器，根据cookie判断用户是否已登录，若已登录则将用户身份设置为一个Threadlocal中的线程独有变量，在controller访问的前中后进行拦截
+ */
 //这个controller一定要加
 @Controller
 @Component
@@ -28,7 +31,7 @@ public class PassportInterceptor implements HandlerInterceptor {
     @Autowired
     HostHodler hostHodler;
 
-
+    //拦截验证用户身份
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //处于所有http请求的最前面，先根据cookie判断用户是否已登录
@@ -56,6 +59,7 @@ public class PassportInterceptor implements HandlerInterceptor {
         return true;
     }
 
+    //验证用户身份后，页面渲染前，将user的信息加入model
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView != null) {//在页面渲染前执行，将user对象加入model的域中，那么所有选然后的页面就可以直接在属性中访问user
