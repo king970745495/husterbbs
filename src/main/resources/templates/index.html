@@ -6,6 +6,8 @@
 <body class="zhi ">
     <div th:replace="header :: header_1"></div>
     <div th:replace="header :: header_2"></div>
+    <link rel="stylesheet" href="../styles/index.css">
+    <link rel="stylesheet" href="../styles/detail.css">
     <div class="zg-wrap zu-main clearfix " role="main">
         <div class="zu-main-content">
             <div class="zu-main-content-inner">
@@ -36,7 +38,7 @@
                                             <meta itemprop="answer-id" content="389034">
                                             <meta itemprop="answer-url-token" content="13174385">
                                             <h2 class="feed-title">
-                                                <a class="question_link" target="_blank" th:href="@{www.baidu.com}" th:text="${vo.map['question'].title}"></a>
+                                                <a class="question_link" target="_blank" th:href="@{'/question/'+${vo.get('question').id}}" th:text="${vo.map['question'].title}"></a>
                                             </h2>
                                             <div class="feed-question-detail-item">
                                                 <div class="question-description-plain zm-editable-content"></div>
@@ -58,7 +60,7 @@
                                                 </div>
                                                 <div class="zm-item-answer-author-info">
                                                     <a class="author-link" th:utext="${vo.map['user'].name}" data-tip="p$b$amuro1230" target="_blank" th:href="@{'/user/'+${vo.map['user'].id}}"></a>
-                                                    <span th:text="'，'+${vo.map['user'].salt}" class="bio">，从互联网行业出来在做旅行的前对冲基金从…</span>
+                                                    <span th:utext="${#dates.format(vo.map['question'].createdDate, 'yyyy-MM-dd')}" class="bio">2019-01-01</span>
 
                                                 </div>
                                                 <div class="zm-item-vote-info" data-votecount="4168" data-za-module="VoteInfo">
@@ -83,7 +85,7 @@
                                                         <a href="#" class="meta-item js-thank" data-thanked="false">
                                                             <i class="z-icon-thank"></i>感谢</a>
 
-                                                        <span th:utext="'&emsp;&emsp;&emsp;'+${#dates.format(vo.map['question'].createdDate, 'yyyy-MM-dd')}" class="bio"></span>
+                                                        <!--<span th:utext="'&emsp;&emsp;&emsp;'+${#dates.format(vo.map['question'].createdDate, 'yyyy-MM-dd')}" class="bio"></span>-->
 
                                                         <button class="meta-item item-collapse js-collapse">
                                                             <i class="z-icon-fold"></i>收起</button>
@@ -193,4 +195,18 @@
             <div class="tooltip-arrow arrow"></div>
             <div class="tooltip-inner inner">如需转载，请通过私信或评论联系我</div></div>
     </div>
+
+    <script type="text/javascript" src="/scripts/main/site/detail.js"></script>
+    <script type="text/javascript" src="/scripts/main/jquery.js"></script>
+    <script type="text/javascript" src="/scripts/main/base/base.js"></script>
+    <script type="text/javascript" src="/scripts/main/base/util.js"></script>
+    <script type="text/javascript" src="/scripts/main/base/event.js"></script>
+    <script type="text/javascript" src="/scripts/main/util/action.js"></script>
+    <script type="text/javascript" src="/scripts/main/util/business.js"></script>
+    <script type="text/javascript" src="/scripts/main/component/component.js"></script>
+    <script type="text/javascript" src="/scripts/main/component/popup.js"></script>
+    <script type="text/javascript" src="/scripts/main/component/popupAdd.js"></script>
+    <script type="text/javascript" src="/scripts/main/component/popupMsg.js"></script>
+    <script type="text/javascript" src="/scripts/main/site/home.js"></script>
+
 </body></html>

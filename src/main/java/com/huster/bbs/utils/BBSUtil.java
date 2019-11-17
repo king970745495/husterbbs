@@ -1,9 +1,11 @@
 package com.huster.bbs.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
+import java.util.Map;
 
 /**
  * Created by nowcoder on 2016/7/3.
@@ -11,6 +13,42 @@ import java.security.MessageDigest;
 public class BBSUtil {
     private static final Logger logger = LoggerFactory.getLogger(BBSUtil.class);
 
+    //匿名游客的id
+    public static  int ANONYMOUS_USERID = 0;
+
+    /**
+     * 处理json数据的方法
+     * @param code 数据是否正确
+     * @param msg 数据传递的数据（消息）
+     * @return json字符串
+     */
+    public static String getJsonString(int code, String msg) {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        json.put("msg",msg);
+        return json.toJSONString();
+    }
+    // Json返回格式封装,所有返回json前端js都有对应处理
+    public static String getJsonString(int code) {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        return json.toJSONString();
+    }
+    public static String getJsonString(int code, Map<String, Object> map) {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            json.put(entry.getKey(), entry.getValue());
+        }
+        return json.toJSONString();
+    }
+
+
+    /**
+     * 对字符串进行加密解密，比如用到对密码的加密中
+     * @param key
+     * @return
+     */
     public static String MD5(String key) {
         char hexDigits[] = {
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
