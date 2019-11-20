@@ -1,9 +1,8 @@
 package com.huster.bbs.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.huster.bbs.model.HostHodler;
-import com.huster.bbs.model.Question;
-import com.huster.bbs.model.User;
+import com.huster.bbs.model.*;
+import com.huster.bbs.service.CommentService;
 import com.huster.bbs.service.QuestionService;
 import com.huster.bbs.service.UserService;
 import com.huster.bbs.utils.BBSUtil;
@@ -14,7 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 处理提问业务的controller
@@ -33,6 +34,8 @@ public class QuestionController {
 
     @Autowired
     HostHodler hostHodler;
+    @Autowired
+    CommentService commentService;
 
     /**
      * 处理新增问题的ajax请求
@@ -65,17 +68,30 @@ public class QuestionController {
         return BBSUtil.getJsonString(1,"失败");
     }
 
+    /**
+     * 显示一个问题详情
+     * @param model
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "/question/{id}")
     public String getQuestionDetail (Model model, @PathVariable(value = "id") int id) {
         Question question = questionService.getQuestionById(id);
         model.addAttribute("question", question);
-        User user = userService.getUser(question.getId());
-        model.addAttribute("user", user);
+        /*User user = userService.getUser(question.getId());
+        model.addAttribute("user", user);*/
+
+        List<Comment> commentList = commentService.getCommentsByEntity(id, EntityType.ENTITY_QUESTION);
+
+        List<ViewObject> comments = new ArrayList<ViewObject>();//将评论的所需材料封装在一个对象中，在前端可以实现对这个对象集合的遍历，实现列举所有的评论
+        for (Comment comment : commentList) {
+            ViewObject vo = new ViewObject();
+            vo.set("comment", comment);
+            vo.set("user", userService.getUser(comment.getUserId()));
+            comments.add(vo);
+        }
+        model.addAttribute("comments", comments);
         return "detail";
     }
-
-
-
-
 
 }

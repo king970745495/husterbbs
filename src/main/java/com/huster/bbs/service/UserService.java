@@ -24,6 +24,11 @@ public class UserService {
         return userDAO.getUser(id);
     }
 
+    //根据用户名查询用户
+    public User getUserByName(String name) {
+        return userDAO.selectByUsername(name);
+    }
+
     //注册用户方法
     public Map<String, String> register(String username, String password) {
         Map<String, String> map = new HashMap<String, String>();
