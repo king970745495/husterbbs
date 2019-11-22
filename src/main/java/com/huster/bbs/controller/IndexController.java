@@ -58,19 +58,32 @@ public class IndexController {
             obj.set("user", user);
 //            vos.add();
             vos.set(ids.indexOf(question.getId()), obj);
+            /*if (question.getUserId() == hostHodler.getUser().getId()) {
+
+            }*/
+
         }
         return vos;
     }
     private List<ViewObject> getAllQuestions(int userId) {
-        List<ViewObject> vos = new ArrayList<ViewObject>();
+        Set<String> questionIds = jedisAdapter.zrevrange(RedisKeyUtil.getQuestionScoreKey(), 0, -1);
+//        Set<String> questionIds = jedisAdapter.zrange(RedisKeyUtil.getQuestionScoreKey(), offset, limit);
+        List<Integer> ids = new ArrayList<>();
+        for (String id : questionIds) {
+            int i = Integer.parseInt(id);
+            ids.add(i);
+        }
+        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
+        List<Question> questions = questionService.getQuestionsByIds(ids);
 
-        List<Question> questions = questionService.getQuestions(userId);
+        //List<Question> questions = questionService.getQuestions(userId);
         for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
             ViewObject obj = new ViewObject();
             obj.set("question", question);
             User user = userService.getUser(question.getUserId());
             obj.set("user", user);
-            vos.add(obj);
+//            vos.add(obj);
+            vos.set(ids.indexOf(question.getId()), obj);
         }
         return vos;
     }
