@@ -31,9 +31,9 @@
                                             <img th:src="@{${vo.map['user'].headUrl}}" class="zm-item-img-avatar"></a>
                                     </div>
                                     <div class="feed-main">
-                                        <div class="feed-source" data-za-module="FeedSource">热门回答，来自
+                                        <!--<div class="feed-source" data-za-module="FeedSource">热门回答，来自
                                             <a href="https://nowcoder.com/topic/19562033" data-tip="t$t$19562033" data-token="19562033" data-topicid="3946" target="_blank">人际交往</a>
-                                            <a data-follow="t:link" href="javascript:;" class="zg-follow zu-autohide follow-topic zu-edit-button" data-id="3946">关注话题</a></div>
+                                            <a data-follow="t:link" href="javascript:;" class="zg-follow zu-autohide follow-topic zu-edit-button" data-id="3946">关注话题</a></div>-->
                                         <div class="feed-content" data-za-module="AnswerItem">
                                             <meta itemprop="answer-id" content="389034">
                                             <meta itemprop="answer-url-token" content="13174385">
@@ -48,8 +48,11 @@
                                                 <meta itemprop="answer-id" content="389034">
                                                 <meta itemprop="answer-url-token" content="13174385"> -->
                                                 <div class="zm-item-vote">
-                                                    <a class="zm-item-vote-count js-expand js-vote-count" href="javascript:;" data-bind-votecount="">4168</a></div>
-                                                <div class="zm-votebar" data-za-module="VoteBar">
+                                                    <a th:text="${vo.get('followCount')}"
+                                                       class="zm-item-vote-count js-expand js-vote-count" href="javascript:;"
+                                                       data-bind-votecount="">4168</a>
+                                                </div>
+                                                <!--<div class="zm-votebar" data-za-module="VoteBar">
                                                     <button class="up" aria-pressed="false" title="赞同">
                                                         <i class="icon vote-arrow"></i>
                                                         <span class="count">4168</span>
@@ -57,7 +60,7 @@
                                                     <button class="down" aria-pressed="false" title="反对，不会显示你的姓名">
                                                         <i class="icon vote-arrow"></i>
                                                         <span class="label sr-only">反对，不会显示你的姓名</span></button>
-                                                </div>
+                                                </div>-->
                                                 <div class="zm-item-answer-author-info">
                                                     <a class="author-link" th:utext="${vo.map['user'].name}" data-tip="p$b$amuro1230" target="_blank" th:href="@{'/user/'+${vo.map['user'].id}}"></a>
                                                     <span th:utext="${#dates.format(vo.map['question'].createdDate, 'yyyy-MM-dd')}" class="bio">2019-01-01</span>
@@ -82,8 +85,8 @@
                                                             <i class="z-icon-follow"></i>关注问题</a>
                                                         <a href="#" name="addcomment" class="meta-item toggle-comment js-toggleCommentBox">
                                                             <i class="z-icon-comment"></i><span th:utext="${vo.map['question'].commentCount} + '条评论'"></span></a>
-                                                        <a href="#" class="meta-item js-thank" data-thanked="false">
-                                                            <i class="z-icon-thank"></i>感谢</a>
+                                                        <!--<a href="#" class="meta-item js-thank" data-thanked="false">
+                                                            <i class="z-icon-thank"></i>感谢</a>-->
 
                                                         <!--<span th:utext="'&emsp;&emsp;&emsp;'+${#dates.format(vo.map['question'].createdDate, 'yyyy-MM-dd')}" class="bio"></span>-->
 
@@ -105,7 +108,15 @@
 
                         </div>
                     </div>
-                    <a href="javascript:;" id="zh-load-more" data-method="next" class="zg-btn-white zg-r3px zu-button-more" style="">更多</a></div>
+                    <!--<nav aria-label="...">
+                        <ul class="pager">
+                            <li th:if="${page>1}" class="previous"><a th:href="'/?p='+${page-1}" href="#"><span
+                                    aria-hidden="true">&larr;</span> Older</a></li>
+                            <li th:if="${end==0}" class="next"><a th:href="'/?p='+${page+1}" href="#">Newer <span
+                                    aria-hidden="true">&rarr;</span></a></li>
+                        </ul>
+                    </nav>-->
+                    <a href="/index?more=true" id="zh-load-more" data-method="next" class="zg-btn-white zg-r3px zu-button-more" style="">更多</a></div>
             </div>
         </div>
     </div>

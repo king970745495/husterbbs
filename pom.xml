@@ -14,6 +14,8 @@
     <name>springtest</name>
     <description>Demo project for Spring Boot</description>
 
+
+
     <properties>
         <java.version>11</java.version>
 <!--        <thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>-->
@@ -23,6 +25,12 @@
     </properties>
 
     <dependencies>
+        <!--引入mail对应的依赖-->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
         <!--jedis客户端工具-->
         <dependency>
             <groupId>redis.clients</groupId>
@@ -87,9 +95,33 @@
             <artifactId>mybatis</artifactId>
             <version>3.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
+        <!--配置xml文件的扫描，防止其被拦截，打包的时候扫不到-->
+        <!--<resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>-->
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

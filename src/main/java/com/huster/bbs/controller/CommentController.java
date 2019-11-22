@@ -1,9 +1,14 @@
 package com.huster.bbs.controller;
 
+import com.huster.bbs.async.EventModel;
+import com.huster.bbs.async.EventProducer;
+import com.huster.bbs.async.EventType;
 import com.huster.bbs.model.Comment;
 import com.huster.bbs.model.EntityType;
 import com.huster.bbs.model.HostHodler;
+import com.huster.bbs.model.Question;
 import com.huster.bbs.service.CommentService;
+import com.huster.bbs.service.QuestionService;
 import com.huster.bbs.service.SensitiveService;
 import com.huster.bbs.utils.BBSUtil;
 import org.slf4j.Logger;
@@ -13,7 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.Date;
 
 @Controller
@@ -26,6 +30,11 @@ public class CommentController {
     HostHodler hostHodler;
     @Autowired
     CommentService commentService;
+    @Autowired
+    QuestionService questionService;
+    @Autowired
+    EventProducer eventProducer;
+
 
     @RequestMapping(path = {"/addComment"}, method = {RequestMethod.POST})
     public String addComment(@RequestParam("questionId") int questionId,
@@ -43,6 +52,11 @@ public class CommentController {
             comment.setEntityId(questionId);
             comment.setStatus(0);
             commentService.addComment(comment);
+            // 更新question的评论数
+            int count = commentService.getCommentCount(comment.getEntityId(), comment.getEntityType());
+            questionService.updateCommentCount(comment.getEntityId(), count + 1);
+            // 推送异步事件
+            eventProducer.fireEvent(new EventModel(EventType.COMMENT).setActorId(comment.getUserId()).setEntityId(questionId));
         } catch(Exception e) {
             logger.error("增加评论失败" + e.getMessage());
         }

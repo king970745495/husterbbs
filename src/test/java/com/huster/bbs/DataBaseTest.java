@@ -1,13 +1,22 @@
 package com.huster.bbs;
 import com.huster.bbs.dao.UserDAO;
 import com.huster.bbs.dao.QuestionDAO;
+import com.huster.bbs.model.EntityType;
 import com.huster.bbs.model.Question;
+import com.huster.bbs.model.User;
+import com.huster.bbs.service.FollowService;
+import com.huster.bbs.service.QuestionService;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest
 //@Sql("/init-schema.sql")//让测试程序在执行前，执行这个sql文件里的语句
 class DataBaseTest {
@@ -15,64 +24,39 @@ class DataBaseTest {
     UserDAO userDAO;
     @Autowired
     QuestionDAO questionDAO;
+    @Autowired
+    QuestionService questionService;
+    @Autowired
+    FollowService followService;
 
-
+    //初始化表中的数据，插入一些包含与非包含关系
     @Test
-    void contextLoads() {
-        /**
-         * question表部分
-         */
-        //插入
-        /*Random random = new Random();
-        for (int i = 0;i <11;i++) {
-            Question question = new Question();
-            question.setTitle("king-"+i);
-            question.setCommentCount(10);
-            question.setCreatedDate(new Date());
-            question.setContent("zheshi...");
-            question.setUserId(i);
-            questionDAO.addQuestion(question);
-        }*/
-       /* List<Question> questions = questionDAO.getQuestions(1);
-        for (Question question : questions) {
-            System.out.println(question);
-        }*/
-        List<Question> questions = questionDAO.selectLatestQuestion(3, 1, 3);
-        for (Question question : questions) {
-            System.out.println(question);
-        }
+    public void initDatabase() {
+        Random random = new Random();
 
-        /**
-         * User表部分
-         */
-        //插入数据
-        //Random random = new Random();
-        /*for (int i = 0;i <11;i++) {
+        for(int i=0; i<11; ++i){
             User user = new User();
-            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png",random.nextInt(1000)));
-            user.setName(String.format("USER%d",i));
-            user.setPassword("");
+            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", random.nextInt(1000)));
+            user.setName(String.format("USER%d",i+1));
+            user.setPassword("123");
             user.setSalt("");
             userDAO.addUser(user);
-        }*/
 
-        //查询数据
-        /*List<User> users = userDAO.getUsers(1);
-        for (User user:users) {
-            System.out.println(user);
-        }*/
+            //互相关注的测试数据的生成
+            for (int j = 0; j< i; ++j){
+                followService.follow(j+1, EntityType.ENTITY_USER, i+1);
+            }
 
-        //更新数据
-        /*User user = new User();
-        user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png",random.nextInt(1000)));
-        user.setName("kingliu");
-        user.setPassword("123456789");
-        user.setSalt("");
-        user.setId(1);
-        userDAO.updateUser(user);*/
-
-        //删除数据
-        /*userDAO.deleteUser(4);*/
-
+            Question question = new Question();
+//            question.setCommentCount(i+1);
+            question.setCommentCount(0);
+            Date date = new Date();
+            date.setTime(date.getTime() + 60*60*1000*i);
+            question.setCreatedDate(date);
+            question.setUserId(i+1);
+            question.setTitle(String.format("Title%d",i+1));
+            question.setContent(String.format("Content %d",i+1));
+            questionService.addQuestion(question);
+        }
     }
 }

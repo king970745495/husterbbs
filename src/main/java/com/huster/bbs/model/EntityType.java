@@ -5,5 +5,6 @@ public class EntityType {
     public static int ENTITY_QUESTION = 1;
     //对评论的评论
     public static int ENTITY_COMMENT = 2;
+    //用户实体
     public static int ENTITY_USER = 3;
 }

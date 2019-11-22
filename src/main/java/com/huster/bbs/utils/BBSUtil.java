@@ -1,6 +1,7 @@
 package com.huster.bbs.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.huster.bbs.model.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,10 @@ public class BBSUtil {
 
     //匿名游客的id
     public static  int ANONYMOUS_USERID = 0;
+    //系统管理员id
+    public static  int ADMIN_USERID = 1;
+    //计算问题分数的参数
+    public static double G = 1.8;
 
     /**
      * 处理json数据的方法
@@ -76,4 +81,18 @@ public class BBSUtil {
             return null;
         }
     }
+
+//    public static double getQuestionScores(Question question, Double p) {
+    public static double getQuestionScores(int questionId, Double p) {//p为评论数
+        /*double t = (int)((System.currentTimeMillis() - question.getCreatedDate().getTime())/3600000);//问题发布时间到现在的小时数
+        //int p = question.getCommentCount();
+        double score = (p - 1)/Math.pow(t + 2, G);
+        return score;*/
+        //以后可以考虑单独开一个线程，专门刷新redis中的排行榜，多长时间刷新一次，redis中存储三个zset，一个保存起始时间，一个保存评论数，一个保存分数
+        double score = p+Math.log(questionId);
+        return score;//现在暂时用这个机制，log减缓问题的上升速度
+    }
+
+
+
 }

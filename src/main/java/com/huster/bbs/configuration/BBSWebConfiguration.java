@@ -5,6 +5,7 @@ import com.huster.bbs.interceptor.PassportInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -22,5 +23,17 @@ public class BBSWebConfiguration implements WebMvcConfigurer {
         registry.addInterceptor(passportInterceptor).addPathPatterns("/**");
         registry.addInterceptor(loginRequiredInterceptor).addPathPatterns("/user/*");
 
+    }
+
+    /**
+     * 这里有个坑，SpringBoot2 必须重写该方法，否则静态资源无法访问
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/META-INF/resources/")
+                .addResourceLocations("classpath:/resources/")
+                .addResourceLocations("classpath:/static/")
+                .addResourceLocations("classpath:/public/");
     }
 }
