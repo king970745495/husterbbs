@@ -61,7 +61,6 @@ public class IndexController {
             /*if (question.getUserId() == hostHodler.getUser().getId()) {
 
             }*/
-
         }
         return vos;
     }
