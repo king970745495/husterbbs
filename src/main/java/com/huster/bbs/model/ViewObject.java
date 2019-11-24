@@ -11,6 +11,7 @@ public class ViewObject {
     private Map<String, Object> map;
 
     public Map<String, Object> getMap() {
+//        if (map.size() == 0) return null;
         return map;
     }
 

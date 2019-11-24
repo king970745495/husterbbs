@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-ZA-Response-Id" content="46acde5c53db46f2806ccad726de9826">
-    <title>首页 - 知乎</title>
+    <title>首页 - HusterBBS</title>
     <meta name="apple-itunes-app" content="app-id=432274380">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta http-equiv="mobile-agent" content="format=html5">
@@ -21,7 +21,7 @@
 <div role="navigation" class="zu-top" th:fragment="header_1">
     <div class="zg-wrap modal-shifting clearfix" id="zh-top-inner">
         <a href="/" class="zu-top-link-logo" id="zh-top-link-logo" data-za-c="view_home" data-za-a="visit_home"
-           data-za-l="top_navigation_zhihu_logo">牛客</a>
+           data-za-l="top_navigation_zhihu_logo">HusterBBS</a>
         <div class="top-nav-profile">
 
             <ul th:if="${user==null}" class="topnav-noauth clearfix">
@@ -67,7 +67,7 @@
         <div role="search" id="zh-top-search" class="zu-top-search">
             <form method="GET" action="/search" id="zh-top-search-form" class="zu-top-search-form">
                 <input type="hidden" name="type" value="content">
-                <label for="q" class="hide-text">牛客搜索</label><input type="text" class="zu-top-search-input" id="q"
+                <label for="q" class="hide-text">HusterBBS搜索</label><input type="text" class="zu-top-search-input" id="q"
                                                                     name="q" autocomplete="off" value=""
                                                                     placeholder="搜索你感兴趣的内容..." role="combobox"
                                                                     aria-autocomplete="list">
@@ -90,6 +90,9 @@
                             class="mobi-arrow"></span>消息<span id="zh-top-nav-count"
                                                               class="zu-top-nav-count zg-noti-number"
                                                               style="display: none;">0</span></a>
+                </li>
+                <li class="zu-top-nav-li " id="zh-top-nav-focus">
+                    <a class="zu-top-nav-link" href="/pullfeeds">关心</a>
                 </li>
 
             </ul>

@@ -41,7 +41,6 @@ public class IndexController {
     //私有方法，用于根据条件查询问题，并将问题包装成ViewObject
     private List<ViewObject> getQuestions(int userId, int offset, int limit) {
         Set<String> questionIds = jedisAdapter.zrevrange(RedisKeyUtil.getQuestionScoreKey(), offset, limit);
-//        Set<String> questionIds = jedisAdapter.zrange(RedisKeyUtil.getQuestionScoreKey(), offset, limit);
         List<Integer> ids = new ArrayList<>();
         for (String id : questionIds) {
             int i = Integer.parseInt(id);
@@ -49,24 +48,18 @@ public class IndexController {
         }
         List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
         List<Question> questions = questionService.getQuestionsByIds(ids);
-        //List<Question> questions = questionService.getLatestQuestion(userId,offset,limit);
         for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
             ViewObject obj = new ViewObject();
             question.setCommentCount(jedisAdapter.zscore(RedisKeyUtil.getQuestionCommentCountKey(), String.valueOf(question.getId())).intValue());
             obj.set("question", question);
             User user = userService.getUser(question.getUserId());
             obj.set("user", user);
-//            vos.add();
             vos.set(ids.indexOf(question.getId()), obj);
-            /*if (question.getUserId() == hostHodler.getUser().getId()) {
-
-            }*/
         }
         return vos;
     }
     private List<ViewObject> getAllQuestions(int userId) {
         Set<String> questionIds = jedisAdapter.zrevrange(RedisKeyUtil.getQuestionScoreKey(), 0, -1);
-//        Set<String> questionIds = jedisAdapter.zrange(RedisKeyUtil.getQuestionScoreKey(), offset, limit);
         List<Integer> ids = new ArrayList<>();
         for (String id : questionIds) {
             int i = Integer.parseInt(id);
@@ -75,13 +68,11 @@ public class IndexController {
         List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
         List<Question> questions = questionService.getQuestionsByIds(ids);
 
-        //List<Question> questions = questionService.getQuestions(userId);
         for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
             ViewObject obj = new ViewObject();
             obj.set("question", question);
             User user = userService.getUser(question.getUserId());
             obj.set("user", user);
-//            vos.add(obj);
             vos.set(ids.indexOf(question.getId()), obj);
         }
         return vos;
@@ -99,7 +90,8 @@ public class IndexController {
 
     @RequestMapping(path = {"/user/{id}"}, method = {RequestMethod.GET,RequestMethod.POST})
     public String index(Model model, @PathVariable("id") int userId) {
-        model.addAttribute("vos", getQuestions(userId,0,10));
+//        model.addAttribute("vos", getQuestions(userId,0,10));
+        model.addAttribute("vos", getQuestionsByIdsAndUser(userId,0,10));
         // 显示关注和被关注列表
         User user = userService.getUser(userId);
         ViewObject vo = new ViewObject();
@@ -113,8 +105,33 @@ public class IndexController {
             vo.set("followed", false);
         }
         model.addAttribute("profileUser", vo);
-//        return "index";
         return "profile";
+    }
+
+    //私有方法，用于根据条件查询问题，并将问题包装成ViewObject
+    private List<ViewObject> getQuestionsByIdsAndUser(int userId, int offset, int limit) {
+        Set<String> questionIds = jedisAdapter.zrevrange(RedisKeyUtil.getQuestionScoreKey(), offset, limit);
+        List<Integer> ids = new ArrayList<>();
+        for (String id : questionIds) {
+            int i = Integer.parseInt(id);
+            ids.add(i);
+        }
+//        List<Question> questions = questionService.getQuestionsByIdsAndUser(ids, userId);
+        List<Question> questions = questionService.getQuestionsByIds(ids);
+        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
+        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
+            ViewObject obj = new ViewObject();
+            question.setCommentCount(jedisAdapter.zscore(RedisKeyUtil.getQuestionCommentCountKey(), String.valueOf(question.getId())).intValue());
+            obj.set("question", question);
+            User user = userService.getUser(question.getUserId());
+            obj.set("user", user);
+            vos.set(ids.indexOf(question.getId()), obj);
+        }
+        /*for (int i = 0; i < vos.size(); i++) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
+            if (vos.get(i) != null) continue;
+            else vos.remove(i);
+        }*/
+        return vos;
     }
 
 }

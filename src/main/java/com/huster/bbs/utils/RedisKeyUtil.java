@@ -14,11 +14,12 @@ public class RedisKeyUtil {
     // 关注对象key的前缀
     private static String BIZ_FOLLOWEE = "FOLLOWEE";
 
+    //新鲜事时间轴
     private static String BIZ_TIMELINE = "TIMELINE";
 
-    //redis中问题：分数-id    的zset
+    //排序：redis中问题，分数-id    的zset
     private static String QUESTION_SCORE = "QUESTION_SCORE";
-    //redis中问题：评论数-id    的zset
+    //排序：redis中问题，评论数-id    的zset
     private static String QUESTION_COMMENT_COUNT = "QUESTION_COMMENT_COUNT";
 
     public static String getQuestionScoreKey() {

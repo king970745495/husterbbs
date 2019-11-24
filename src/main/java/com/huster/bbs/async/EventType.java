@@ -10,7 +10,8 @@ public enum EventType {
     LOGIN(2),
     MAIL(3),
     FOLLOW(4),
-    UNFOLLOW(5);
+    UNFOLLOW(5),
+    QUESTION(6);
 
     //构造函数
     private int value;

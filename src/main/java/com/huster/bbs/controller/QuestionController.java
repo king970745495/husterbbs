@@ -1,6 +1,9 @@
 package com.huster.bbs.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.huster.bbs.async.EventModel;
+import com.huster.bbs.async.EventProducer;
+import com.huster.bbs.async.EventType;
 import com.huster.bbs.model.*;
 import com.huster.bbs.service.*;
 import com.huster.bbs.utils.BBSUtil;
@@ -48,6 +51,9 @@ public class QuestionController {
     @Autowired
     JedisAdapter jedisAdapter;
 
+    @Autowired
+    EventProducer eventProducer;
+
     /**
      * 处理新增问题的ajax请求
      * @param title 问题标题
@@ -71,6 +77,8 @@ public class QuestionController {
                 question.setUserId(hostHodler.getUser().getId());
             }
             if (questionService.addQuestion(question) > 0) {
+                // 推送异步事件
+                eventProducer.fireEvent(new EventModel(EventType.QUESTION).setActorId(hostHodler.getUser().getId()).setEntityId(question.getId()));
                 return BBSUtil.getJsonString(0);
             }
         } catch (Exception e) {

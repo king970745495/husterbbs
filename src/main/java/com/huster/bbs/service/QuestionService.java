@@ -95,4 +95,14 @@ public class QuestionService {
         return questionDAO.updateCommentCount(id, comment_count);
     }
 
+    //根据id的List查询所有的问题
+    public List<Question> getQuestionsByIdsAndUser(List<Integer> ids, int userId) {
+        if (ids.size() > 0) {
+            String idStr = "'"+ StringUtils.join(ids,"','")+"'";//将List转换为字符串
+            return questionDAO.getQuestionsByIdsAndUser(idStr, userId);
+        } else {
+            return new ArrayList<Question>();
+        }
+    }
+
 }

@@ -33,4 +33,8 @@ public interface QuestionDAO {
     @Select({"SELECT "+SELECT_FIELDS+" from "+TABLE_NAME,"WHERE id in (${ids})"})//+" WHERE id = #{id}"
     List<Question> getQuestionsByIds(String ids);
 
+    //根据ids和userId查询某用户的所有问题
+    @Select({"SELECT "+SELECT_FIELDS+" from "+TABLE_NAME,"WHERE id in (${idStr}) and user_id = ${userId}"})//+" WHERE id = #{id}"
+    List<Question> getQuestionsByIdsAndUser(@Param("idStr") String idStr, @Param("userId") int userId);
+
 }
