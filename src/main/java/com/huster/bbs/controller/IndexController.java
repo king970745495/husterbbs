@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -38,45 +37,7 @@ public class IndexController {
 
     //日志打印
     private final static Logger logger = LoggerFactory.getLogger(IndexController.class);
-    //私有方法，用于根据条件查询问题，并将问题包装成ViewObject
-    private List<ViewObject> getQuestions(int userId, int offset, int limit) {
-        Set<String> questionIds = jedisAdapter.zrevrange(RedisKeyUtil.getQuestionScoreKey(), offset, limit);
-        List<Integer> ids = new ArrayList<>();
-        for (String id : questionIds) {
-            int i = Integer.parseInt(id);
-            ids.add(i);
-        }
-        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
-        List<Question> questions = questionService.getQuestionsByIds(ids);
-        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
-            ViewObject obj = new ViewObject();
-            question.setCommentCount(jedisAdapter.zscore(RedisKeyUtil.getQuestionCommentCountKey(), String.valueOf(question.getId())).intValue());
-            obj.set("question", question);
-            User user = userService.getUser(question.getUserId());
-            obj.set("user", user);
-            vos.set(ids.indexOf(question.getId()), obj);
-        }
-        return vos;
-    }
-    private List<ViewObject> getAllQuestions(int userId) {
-        Set<String> questionIds = jedisAdapter.zrevrange(RedisKeyUtil.getQuestionScoreKey(), 0, -1);
-        List<Integer> ids = new ArrayList<>();
-        for (String id : questionIds) {
-            int i = Integer.parseInt(id);
-            ids.add(i);
-        }
-        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
-        List<Question> questions = questionService.getQuestionsByIds(ids);
 
-        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
-            ViewObject obj = new ViewObject();
-            obj.set("question", question);
-            User user = userService.getUser(question.getUserId());
-            obj.set("user", user);
-            vos.set(ids.indexOf(question.getId()), obj);
-        }
-        return vos;
-    }
 
     @RequestMapping(path = {"/index","/"}, method ={RequestMethod.GET,RequestMethod.POST})
     public String index(Model model, HttpServletRequest request) {
@@ -89,9 +50,13 @@ public class IndexController {
     }
 
     @RequestMapping(path = {"/user/{id}"}, method = {RequestMethod.GET,RequestMethod.POST})
-    public String index(Model model, @PathVariable("id") int userId) {
-//        model.addAttribute("vos", getQuestions(userId,0,10));
-        model.addAttribute("vos", getQuestionsByIdsAndUser(userId,0,10));
+    public String index(Model model, @PathVariable("id") int userId, HttpServletRequest request) {
+        if (request.getParameter("more") != null) {
+            model.addAttribute("vos", getQuestionsByIdsAndUser(userId, 0, Integer.MAX_VALUE));
+
+        } else {
+            model.addAttribute("vos", getQuestionsByIdsAndUser(userId,0,10));
+        }
         // 显示关注和被关注列表
         User user = userService.getUser(userId);
         ViewObject vo = new ViewObject();
@@ -109,29 +74,66 @@ public class IndexController {
     }
 
     //私有方法，用于根据条件查询问题，并将问题包装成ViewObject
+    private List<ViewObject> getQuestions(int userId, int offset, int limit) {
+        List<Integer> ids = getTargetQuestionIds(offset, limit);
+        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
+        List<Question> questions = questionService.getQuestionsByIds(ids);
+        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
+            ViewObject obj = new ViewObject();
+            obj.set("question", question);
+            User user = userService.getUser(question.getUserId());
+            obj.set("user", user);
+            vos.set(ids.indexOf(question.getId()), obj);
+        }
+        return vos;
+    }
+
+    //得到所有问题，点击更多按钮实现
+    private List<ViewObject> getAllQuestions(int userId) {
+        List<Integer> ids = getTargetQuestionIds(0, -1);
+        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
+        List<Question> questions = questionService.getQuestionsByIds(ids);
+
+        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
+            ViewObject obj = new ViewObject();
+            obj.set("question", question);
+            User user = userService.getUser(question.getUserId());
+            obj.set("user", user);
+            vos.set(ids.indexOf(question.getId()), obj);
+        }
+        return vos;
+    }
+
+    //私有方法，用于根据条件查询问题，并将问题包装成ViewObject
     private List<ViewObject> getQuestionsByIdsAndUser(int userId, int offset, int limit) {
+        List<Integer> ids = getTargetQuestionIds(offset, limit);
+        List<Question> questions = questionService.getQuestionsByIdsAndUser(ids, userId);
+        Collections.sort(questions, new Comparator<Question>() {//问题降序排列
+            @Override
+            public int compare(Question o1, Question o2) {
+                return ids.indexOf(o1.getId()) - ids.indexOf(o2.getId());
+            }
+        });
+        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[questions.size()]));
+        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
+            ViewObject obj = new ViewObject();
+            obj.set("question", question);
+            User user = userService.getUser(question.getUserId());
+            obj.set("user", user);
+            vos.set(questions.indexOf(question), obj);
+        }
+        return vos;
+    }
+
+    //得到问题积分表中的某个排名内的所有问题的id
+    private List<Integer> getTargetQuestionIds(int offset, int limit) {
         Set<String> questionIds = jedisAdapter.zrevrange(RedisKeyUtil.getQuestionScoreKey(), offset, limit);
         List<Integer> ids = new ArrayList<>();
         for (String id : questionIds) {
             int i = Integer.parseInt(id);
             ids.add(i);
         }
-//        List<Question> questions = questionService.getQuestionsByIdsAndUser(ids, userId);
-        List<Question> questions = questionService.getQuestionsByIds(ids);
-        List<ViewObject> vos = new ArrayList<ViewObject>(Arrays.asList(new ViewObject[ids.size()]));
-        for (Question question : questions) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
-            ViewObject obj = new ViewObject();
-            question.setCommentCount(jedisAdapter.zscore(RedisKeyUtil.getQuestionCommentCountKey(), String.valueOf(question.getId())).intValue());
-            obj.set("question", question);
-            User user = userService.getUser(question.getUserId());
-            obj.set("user", user);
-            vos.set(ids.indexOf(question.getId()), obj);
-        }
-        /*for (int i = 0; i < vos.size(); i++) {//对于查询到的每个问题，都需要将问题信息+用户信息  包装进ViewObject，然后传递至前端页面
-            if (vos.get(i) != null) continue;
-            else vos.remove(i);
-        }*/
-        return vos;
+        return ids;
     }
 
 }

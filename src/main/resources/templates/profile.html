@@ -262,7 +262,8 @@
                             </div>
                         </div>
                     </div>
-                    <a href="javascript:;" id="zh-load-more" class="zg-btn-white zg-r3px zu-button-more">更多</a>
+                    <a th:href="'/user/'+${profileUser.get('user').id}+'?more=true'" id="zh-load-more" class="zg-btn-white zg-r3px zu-button-more">更多</a>
+                    <!--th:href="'/user/'+${user.id}"-->
                 </div>
             </div>
         </div>
