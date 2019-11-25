@@ -1,5 +1,4 @@
 package com.huster.bbs.controller;
-
 import com.huster.bbs.model.*;
 import com.huster.bbs.service.CommentService;
 import com.huster.bbs.service.FollowService;
@@ -82,6 +81,8 @@ public class IndexController {
             ViewObject obj = new ViewObject();
             obj.set("question", question);
             User user = userService.getUser(question.getUserId());
+            //问题关注的数量
+            obj.set("followCount", followService.getFollowerCount(EntityType.ENTITY_QUESTION, question.getId()));
             obj.set("user", user);
             vos.set(ids.indexOf(question.getId()), obj);
         }
@@ -98,6 +99,8 @@ public class IndexController {
             ViewObject obj = new ViewObject();
             obj.set("question", question);
             User user = userService.getUser(question.getUserId());
+            //问题关注的数量
+            obj.set("followCount", followService.getFollowerCount(EntityType.ENTITY_QUESTION, question.getId()));
             obj.set("user", user);
             vos.set(ids.indexOf(question.getId()), obj);
         }
@@ -119,6 +122,8 @@ public class IndexController {
             ViewObject obj = new ViewObject();
             obj.set("question", question);
             User user = userService.getUser(question.getUserId());
+            //问题关注的数量
+            obj.set("followCount", followService.getFollowerCount(EntityType.ENTITY_QUESTION, question.getId()));
             obj.set("user", user);
             vos.set(questions.indexOf(question), obj);
         }
@@ -135,5 +140,4 @@ public class IndexController {
         }
         return ids;
     }
-
 }

@@ -80,6 +80,7 @@ public class QuestionService {
     public List<Question> getQuestions(int id) {
         return questionDAO.getQuestions(id);
     }
+
     //根据id的List查询所有的问题
     public List<Question> getQuestionsByIds(List<Integer> ids) {
         if (ids.size() > 0) {

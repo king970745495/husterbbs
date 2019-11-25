@@ -8,6 +8,7 @@ import com.huster.bbs.model.EntityType;
 import com.huster.bbs.model.HostHodler;
 import com.huster.bbs.model.Question;
 import com.huster.bbs.service.CommentService;
+import com.huster.bbs.service.FollowService;
 import com.huster.bbs.service.QuestionService;
 import com.huster.bbs.service.SensitiveService;
 import com.huster.bbs.utils.BBSUtil;
@@ -34,7 +35,8 @@ public class CommentController {
     QuestionService questionService;
     @Autowired
     EventProducer eventProducer;
-
+    @Autowired
+    FollowService followService;
 
     @RequestMapping(path = {"/addComment"}, method = {RequestMethod.POST})
     public String addComment(@RequestParam("questionId") int questionId,
@@ -56,7 +58,10 @@ public class CommentController {
             int count = commentService.getCommentCount(comment.getEntityId(), comment.getEntityType());
             questionService.updateCommentCount(comment.getEntityId(), count + 1);
             // 推送异步事件
-            eventProducer.fireEvent(new EventModel(EventType.COMMENT).setActorId(comment.getUserId()).setEntityId(questionId));
+            if (followService.getFollowerCount(EntityType.ENTITY_USER, hostHodler.getUser().getId()) < 100) {
+                eventProducer.fireEvent(new EventModel(EventType.COMMENT).setActorId(comment.getUserId()).setEntityId(questionId));
+            }
+
         } catch(Exception e) {
             logger.error("增加评论失败" + e.getMessage());
         }

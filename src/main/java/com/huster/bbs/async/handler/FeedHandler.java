@@ -88,6 +88,6 @@ public class FeedHandler implements EventHandler {
 
     @Override
     public List<EventType> getSupportEventTypes() {
-        return Arrays.asList(new EventType[]{EventType.COMMENT, EventType.FOLLOW, EventType.QUESTION});//评论的事件，产生新鲜事
+        return Arrays.asList(new EventType[]{EventType.COMMENT,  EventType.QUESTION});//提问、评论的事件，产生特别关心的动态  EventType.FOLLOW，暂时不关心
     }
 }

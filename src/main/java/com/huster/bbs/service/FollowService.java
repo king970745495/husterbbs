@@ -79,7 +79,7 @@ public class FollowService {
         return getIdsFromSet(jedisAdapter.zrevrange(followeeKey,offset, count));
     }
 
-    //获取某个实体的所有粉丝
+    //获取某个实体的所有粉丝，数量
     public long getFollowerCount(int entityType, int entityId) {
         String followerKey = RedisKeyUtil.getFollowerKey(entityType, entityId);
         return jedisAdapter.zcard(followerKey);

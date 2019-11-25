@@ -88,7 +88,9 @@ public class BBSUtil {
         //int p = question.getCommentCount();
         double score = (p - 1)/Math.pow(t + 2, G);
         return score;*/
-        //以后可以考虑单独开一个线程，专门刷新redis中的排行榜，多长时间刷新一次，redis中存储三个zset，一个保存起始时间，一个保存评论数，一个保存分数
+        //两种刷新分数的解决方案：
+        // 1.分数与评论、发布问题相关，有相关的事件时触发相应的动作，来刷新分数
+        // 2.以后可以考虑单独开一个线程，专门刷新redis中的排行榜，多长时间刷新一次，redis中存储三个zset，一个保存起始时间，一个保存评论数，一个保存分数
         double score = p+Math.log(questionId);
         return score;//现在暂时用这个机制，log减缓问题的上升速度
     }

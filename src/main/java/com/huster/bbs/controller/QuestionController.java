@@ -16,9 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 处理提问业务的controller
@@ -77,8 +75,10 @@ public class QuestionController {
                 question.setUserId(hostHodler.getUser().getId());
             }
             if (questionService.addQuestion(question) > 0) {
-                // 推送异步事件
-                eventProducer.fireEvent(new EventModel(EventType.QUESTION).setActorId(hostHodler.getUser().getId()).setEntityId(question.getId()));
+                // 当前用户的粉丝数<100，推送异步事件【特别关心】
+                if (followService.getFollowerCount(EntityType.ENTITY_USER, hostHodler.getUser().getId()) < 100) {
+                    eventProducer.fireEvent(new EventModel(EventType.QUESTION).setActorId(hostHodler.getUser().getId()).setEntityId(question.getId()));
+                }
                 return BBSUtil.getJsonString(0);
             }
         } catch (Exception e) {
@@ -98,9 +98,6 @@ public class QuestionController {
         Question question = questionService.getQuestionById(id);
         model.addAttribute("question", question);
 
-        /*User user = userService.getUser(question.getId());
-        model.addAttribute("user", user);*/
-
         List<Comment> commentList = commentService.getCommentsByEntity(id, EntityType.ENTITY_QUESTION);
 
         List<ViewObject> comments = new ArrayList<ViewObject>();//将评论的所需材料封装在一个对象中，在前端可以实现对这个对象集合的遍历，实现列举所有的评论
@@ -116,6 +113,19 @@ public class QuestionController {
             vo.set("user", userService.getUser(comment.getUserId()));
             comments.add(vo);
         }
+
+        Collections.sort(comments, new Comparator<ViewObject>() {
+            @Override
+            public int compare(ViewObject o1, ViewObject o2) {
+                if (o1.get("likeCount") == o2.get("likeCount")) {
+                    Comment comment1 = (Comment) o1.get("comment");
+                    Comment comment2 = (Comment) o2.get("comment");
+                    return comment2.getId() - comment1.getId();
+                }
+                return (int)((long)o2.get("likeCount") - (Long) o1.get("likeCount"));
+            }
+        });
+
         model.addAttribute("comments", comments);
         List<ViewObject> followUsers = new ArrayList<>();
         // 获取关注的用户信息
