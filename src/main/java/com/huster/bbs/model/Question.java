@@ -1,7 +1,10 @@
 package com.huster.bbs.model;
 
+import org.springframework.data.elasticsearch.annotations.Document;
+
 import java.util.Date;
 
+@Document(indexName = "hustbbs", type = "question")
 public class Question {
 
     private int id;

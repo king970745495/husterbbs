@@ -19,9 +19,11 @@ public interface QuestionDAO {
     //查询所有问题
     @Select({"SELECT "+SELECT_FIELDS+" from "+TABLE_NAME})//+" WHERE id = #{id}"
     List<Question> getQuestions(int id);
+
     //查询最新的问题
     //#{offset},#{limit}userId
     List<Question> selectLatestQuestion(@Param("userId") int userId, @Param("offset") int offset, @Param("limit") int limit);
+
     //根据id查询问题
     @Select({"SELECT "+SELECT_FIELDS+" from "+TABLE_NAME+" WHERE id = #{id}"})
     Question getQuestionById(int id);

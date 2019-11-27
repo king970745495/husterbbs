@@ -52,6 +52,9 @@ public class QuestionController {
     @Autowired
     EventProducer eventProducer;
 
+    @Autowired
+    SearchService searchService;
+
     /**
      * 处理新增问题的ajax请求
      * @param title 问题标题
@@ -79,6 +82,9 @@ public class QuestionController {
                 if (followService.getFollowerCount(EntityType.ENTITY_USER, hostHodler.getUser().getId()) < 100) {
                     eventProducer.fireEvent(new EventModel(EventType.QUESTION).setActorId(hostHodler.getUser().getId()).setEntityId(question.getId()));
                 }
+                //存入索引库
+                searchService.save(question);
+
                 return BBSUtil.getJsonString(0);
             }
         } catch (Exception e) {

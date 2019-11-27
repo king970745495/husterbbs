@@ -1,5 +1,8 @@
 package com.huster.bbs.model;
 
+import org.springframework.data.elasticsearch.annotations.Document;
+
+//@Document(indexName = "hustbbs", type = "user")
 public class User {
 
     private int id;
