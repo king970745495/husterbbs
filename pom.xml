@@ -11,6 +11,8 @@
     <groupId>com.nowcode</groupId>
     <artifactId>springtest</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <!--发布打包的时候要改成war包-->
+<!--    <packaging>war</packaging>-->
     <name>springtest</name>
     <description>Demo project for Spring Boot</description>
 

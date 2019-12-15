@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
@@ -18,7 +19,7 @@ import java.util.Random;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-//@Sql("/init-schema.sql")//让测试程序在执行前，执行这个sql文件里的语句
+@Sql("/init-schema.sql")//让测试程序在执行前，执行这个sql文件里的语句
 class DataBaseTest {
     @Autowired
     UserDAO userDAO;

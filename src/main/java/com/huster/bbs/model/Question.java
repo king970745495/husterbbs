@@ -1,17 +1,28 @@
 package com.huster.bbs.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
 
-@Document(indexName = "hustbbs", type = "question")
+//@Document(indexName = "bbs", type = "question")
+@Document(indexName = "bbs", type = "question")
 public class Question {
 
+    @Id
+    @Field(store = true, index = false, type = FieldType.Integer)
     private int id;
+    @Field(store = true, index = true, type = FieldType.Text, analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String title;
+    @Field(store = true, index = true, type = FieldType.Text, analyzer = "ik_smart", searchAnalyzer = "ik_smart")
     private String content;
+    //@Field(store = true, index = true, type = FieldType.Integer, analyzer = "bbsanalyzer", searchAnalyzer = "bbsanalyzer")
     private int userId;
+    //@Field(store = true, index = true, type = FieldType.Text, analyzer = "bbsanalyzer", searchAnalyzer = "bbsanalyzer")
     private Date createdDate;
+    //@Field(store = true, index = true, type = FieldType.Integer, analyzer = "bbsanalyzer", searchAnalyzer = "bbsanalyzer")
     private int commentCount;
 
     public Question() {
