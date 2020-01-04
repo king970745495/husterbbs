@@ -63,7 +63,9 @@ public class EventConsumer implements InitializingBean, ApplicationContextAware 
                     List<String> events = jedisAdapter.brpop(0, key);
                     for (String message : events) {
                         //brpop的第一个值是key，直接过滤掉
-                        if (message.equals(key)) continue;;
+                        if (message.equals(key)) {
+                            continue;
+                        }
                         //解析message
                         EventModel eventModel = JSON.parseObject(message, EventModel.class);
                         if (!config.containsKey(eventModel.getType())) {

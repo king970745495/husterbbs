@@ -19,7 +19,8 @@
 
 
     <properties>
-        <java.version>11</java.version>
+<!--        <java.version>11</java.version>-->
+        <java.version>1.8</java.version>
 <!--        <thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>-->
         <!-- 布局功能的支持程序 thymeleaf3主程序 layout2以上版本才能支持 -->
         <!-- thymeleaf2 layout1-->
